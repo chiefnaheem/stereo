@@ -49,9 +49,9 @@ export class MediaService {
   }
 
   //update a media object
-    async update(body: UpdateMediaType): Promise<Media> {
+  async update(body: UpdateMediaType): Promise<Media> {
     try {
-        const { id, ...media } = body;
+      const { id, ...media } = body;
       const mediaToUpdate = await this.mediaRepository.findOneOrFail({
         where: { id },
       });
@@ -60,5 +60,23 @@ export class MediaService {
     } catch (error) {
       throw error;
     }
-}
+  }
+
+  //Search media by title and description
+  async search(search?: string): Promise<Media[]> {
+    try {
+      const query = {}
+        if (search) {
+            // Search by title and description and be case insensitive
+            query['name'] = { $regex: search, $options: 'i' };
+            query['description'] = { $regex: search, $options: 'i' };
+        }
+        
+        return await this.mediaRepository.find({
+            where: query,
+        });
+    } catch (error) {
+        throw error;
+        }
+    }
 }
