@@ -27,7 +27,8 @@ export class MediaDto {
     status?: MediaStatusEnum;
 }
 
-export class UpdateMediaDto extends PartialType(MediaDto) {}
+export class UpdateMediaDto extends PartialType(MediaDto) {
+}
 
 export class PaginationDto {
     @IsOptional()

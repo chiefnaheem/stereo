@@ -8,4 +8,9 @@ export type MediaType = {
   status?: MediaStatusEnum;
 };
 
-export type UpdateMediaType = Partial<MediaType> & { id: string };
+export type UpdateMediaType = Partial<MediaType>;
+
+export type PaginationType = {
+    page: number;
+    limit: number;
+};

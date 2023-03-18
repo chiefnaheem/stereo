@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MediaReturnDto, PaginationDto } from '../dto/media.dto';
 import { Media } from '../entities/media.entities';
-import { MediaType, UpdateMediaType } from '../types/media.types';
+import { MediaType, PaginationType, UpdateMediaType } from '../types/media.types';
 
 @Injectable()
 export class MediaService {
@@ -23,7 +23,7 @@ export class MediaService {
   }
 
   //get a paginated list of media objects
-  async findAll(body?: PaginationDto): Promise<MediaReturnDto> {
+  async findAll(body: PaginationType): Promise<MediaReturnDto> {
     try {
       const { page, limit } = body;
       const [data, count] = await this.mediaRepository.findAndCount({
@@ -49,9 +49,8 @@ export class MediaService {
   }
 
   //update a media object
-  async update(body: UpdateMediaType): Promise<Media> {
+  async update(id: string, media: UpdateMediaType): Promise<Media> {
     try {
-      const { id, ...media } = body;
       const mediaToUpdate = await this.mediaRepository.findOneOrFail({
         where: { id },
       });
@@ -81,13 +80,12 @@ export class MediaService {
   }
 
   //delete a media object
-  async delete(id: string): Promise<string> {
+  async delete(id: string): Promise<Media> {
     try {
       const mediaToDelete = await this.mediaRepository.findOneOrFail({
         where: { id },
       });
-      await this.mediaRepository.remove(mediaToDelete);
-      return 'Media deleted successfully';
+      return await this.mediaRepository.remove(mediaToDelete);
     } catch (error) {
       throw error;
     }
