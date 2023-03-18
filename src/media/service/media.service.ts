@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MediaReturnDto, PaginationDto } from '../dto/media.dto';
 import { Media } from '../entities/media.entities';
-import { MediaType } from '../types/media.types';
+import { MediaType, UpdateMediaType } from '../types/media.types';
 
 @Injectable()
 export class MediaService {
@@ -47,4 +47,18 @@ export class MediaService {
       throw error;
     }
   }
+
+  //update a media object
+    async update(body: UpdateMediaType): Promise<Media> {
+    try {
+        const { id, ...media } = body;
+      const mediaToUpdate = await this.mediaRepository.findOneOrFail({
+        where: { id },
+      });
+      const updatedMedia = Object.assign(mediaToUpdate, media);
+      return await this.mediaRepository.save(updatedMedia);
+    } catch (error) {
+      throw error;
+    }
+}
 }

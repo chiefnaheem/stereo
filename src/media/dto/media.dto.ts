@@ -1,6 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from "class-validator";
 import { Media } from "../entities/media.entities";
 import { MediaStatusEnum, MediaTypeEnum } from "../enum/media.enum";
+import { PartialType } from '@nestjs/mapped-types';
 
 export class MediaDto {
     @IsNotEmpty()
@@ -25,6 +26,8 @@ export class MediaDto {
     @IsEnum(MediaTypeEnum)
     status?: MediaStatusEnum;
 }
+
+export class UpdateMediaDto extends PartialType(MediaDto) {}
 
 export class PaginationDto {
     @IsOptional()
