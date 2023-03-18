@@ -1,6 +1,6 @@
 import { MediaStatusEnum, MediaTypeEnum } from "../enum/media.enum";
 
-export type Media = {
+export type MediaType = {
     type: MediaTypeEnum;
     name: string;
     description?: string;
