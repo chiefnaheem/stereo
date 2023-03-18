@@ -24,7 +24,7 @@ export class Media {
   @Column({ nullable: false })
   url: string;
 
-  @Column({ type: 'enum', enum: MediaStatusEnum })
+  @Column({ type: 'enum', enum: MediaStatusEnum, default: MediaStatusEnum.ACTIVE })
   status: MediaStatusEnum;
 
   @CreateDateColumn()
