@@ -43,4 +43,6 @@ export class MediaReturnDto {
     limit: number;
     currentPage: number;
     totalPages: number;
+    message?: string;
+    staus?: number;
 }
