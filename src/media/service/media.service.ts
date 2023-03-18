@@ -36,4 +36,15 @@ export class MediaService {
       throw error;
     }
   }
+
+  //get a single media object
+  async findOne(id: string): Promise<Media> {
+    try {
+      return await this.mediaRepository.findOneOrFail({
+        where: { id },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
