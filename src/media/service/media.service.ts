@@ -20,9 +20,11 @@ export class MediaService {
   // Create media object
   async create(media: MediaType): Promise<Media> {
     try {
+      this.logger.log(media);
       const newMedia = this.mediaRepository.create(media);
       return await this.mediaRepository.save(newMedia);
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
