@@ -79,20 +79,19 @@ export class MediaService {
   //Search media by title and description
   async search(search?: string): Promise<Media[]> {
     try {
-      const query = {};
       if (search) {
-        // Search by title and description and be case insensitive
-        query['name'] = { $regex: search, $options: 'i' };
-        query['description'] = { $regex: search, $options: 'i' };
+        return await this.mediaRepository.createQueryBuilder('media')
+          .where('media.name LIKE :search', { search: `%${search}%` })
+          .orWhere('media.description LIKE :search', { search: `%${search}%` })
+          .getMany();
+      } else {
+        return await this.mediaRepository.find();
       }
-
-      return await this.mediaRepository.find({
-        where: query,
-      });
     } catch (error) {
       throw error;
     }
   }
+  
 
   //delete a media object
   async remove(id: string): Promise<Media> {

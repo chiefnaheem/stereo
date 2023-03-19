@@ -9,7 +9,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { MediaDto, PaginationDto, UpdateMediaDto } from 'src/media/dto/media.dto';
+import {
+  MediaDto,
+  PaginationDto,
+  UpdateMediaDto,
+} from 'src/media/dto/media.dto';
 import { MediaService } from '../service/media.service';
 
 @Controller('media')
@@ -21,7 +25,7 @@ export class MediaController {
   @Post()
   async create(@Body() media: MediaDto) {
     try {
-        console.log(media)
+      console.log(media);
       const newMedia = await this.mediaService.create(media);
       return {
         statusCode: HttpStatus.CREATED,
@@ -32,6 +36,23 @@ export class MediaController {
     } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
+        status: 'error',
+        message: error.message,
+      };
+    }
+  }
+
+  @Get('search')
+  async search(@Query('search') search?: string) {
+    try {
+      const media = await this.mediaService.search(search);
+      return {
+        status: 'success',
+        message: 'Media fetched successfully',
+        data: media,
+      };
+    } catch (error) {
+      return {
         status: 'error',
         message: error.message,
       };
@@ -111,20 +132,5 @@ export class MediaController {
   }
 
   //search for a media object
-  @Get('search')
-  async search(@Query('search') search: string) {
-    try {
-      const media = await this.mediaService.search(search);
-      return {
-        status: 'success',
-        message: 'Media fetched successfully',
-        data: media,
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        message: error.message,
-      };
-    }
-  }
+ 
 }

@@ -1,185 +1,3 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { getRepositoryToken } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
-// import { MediaService } from './media.service';
-// import { Media } from '../entities/media.entities';
-// import { MediaParam, PaginationType, UpdateMediaParam } from '../types/media.types';
-// import { MediaStatusEnum, MediaTypeEnum } from '../enum/media.enum';
-
-// describe('MediaService', () => {
-//   let service: MediaService;
-//   let mediaRepository: Repository<Media>;
-
-//   const mockMedia = [
-//     {
-//       id: '1',
-//       name: 'Mock Media 1',
-//       description: 'This is mock media 1',
-//       createdAt: new Date('2022-01-01'),
-//       type: MediaTypeEnum.AUDIO,
-//       status: MediaStatusEnum.ACTIVE,
-//       url: 'https://www.youtube.com/watch?v=1',
-//       updatedAt: new Date('2022-01-02'),
-//       deletedAt: null,
-//     },
-//     {
-//       id: '2',
-//       name: 'Mock Media 2',
-//       description: 'This is mock media 2',
-//       type: MediaTypeEnum.AUDIO,
-//       status: MediaStatusEnum.ACTIVE,
-//       url: 'https://www.youtube.com/watch?v=1',
-//       createdAt: new Date('2022-01-02'),
-//       updatedAt: new Date('2022-01-03'),
-//       deletedAt: null,
-//     },
-//   ];
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         MediaService,
-//         {
-//           provide: getRepositoryToken(Media),
-//           useClass: Repository,
-//         },
-//       ],
-//     }).compile();
-
-//     service = module.get<MediaService>(MediaService);
-//     mediaRepository = module.get<Repository<Media>>(getRepositoryToken(Media));
-//   });
-
-//   describe('create', () => {
-//     it('should create and return a media object', async () => {
-//       jest.spyOn(mediaRepository, 'create').mockReturnValue(mockMedia[0] as Media);
-//       jest.spyOn(mediaRepository, 'save').mockResolvedValue(mockMedia[0] as Media);
-
-//       const newMedia: MediaParam = {
-//         name: 'New Media',
-//         description: 'This is a new media object',
-//         type: MediaTypeEnum.AUDIO,
-//         url: 'https://www.youtube.com/watch?v=1',
-//       };
-//       const result = await service.create(newMedia);
-//       expect(result).toEqual(mockMedia[0]);
-//     });
-
-//     it('should throw an error if there is an error in creating the media object', async () => {
-//       const errorMessage = 'Error in creating media object';
-//       jest.spyOn(mediaRepository, 'create').mockImplementation(() => {
-//         throw new Error(errorMessage);
-//       });
-
-//       const newMedia: MediaParam = {
-//         name: 'New Media',
-//         description: 'This is a new media object',
-//         type: MediaTypeEnum.AUDIO,
-//         url: 'https://www.youtube.com/watch?v=1',
-//       };
-//       await expect(service.create(newMedia)).rejects.toThrowError(errorMessage);
-//     });
-//   });
-
-//   describe('findAll', () => {
-//     it('should return a paginated list of media objects', async () => {
-//       jest.spyOn(mediaRepository, 'findAndCount').mockResolvedValue([mockMedia, mockMedia.length]);
-//       const pagination: PaginationType = {
-//         page: 1,
-//         limit: 10,
-//       };
-//       const result = await service.findAll(pagination);
-//       expect(result).toEqual({
-//         count: mockMedia.length,
-//         limit: pagination.limit,
-//         currentPage: pagination.page,
-//         totalPages: 1,
-//         media: mockMedia,
-//       });
-//     });
-
-//     it('should throw an error if there is an error in finding the media objects', async () => {
-//       const errorMessage = 'Error in finding media objects';
-//       jest.spyOn(mediaRepository, 'findAndCount').mockImplementation(() => {
-//         throw new Error(errorMessage);
-//       });
-
-//       const pagination: PaginationType = {
-//         page: 1,
-//         limit: 10,
-//       };
-//       await expect(service.findAll(pagination)).rejects.toThrowError(errorMessage))
-//         expect(mediaRepository.findAndCount).toHaveBeenCalledTimes(1);
-//         expect(mediaRepository.findAndCount).toHaveBeenCalledWith({
-//           order: { createdAt: 'DESC' },
-//           skip: 0,
-//           take: 10,
-//         });
-//       });
-
-//       it('should throw an error if there is an error in finding a single media object', async () => {
-//         const errorMessage = 'Error in finding media object';
-//         jest.spyOn(mediaRepository, 'findOneOrFail').mockImplementation(() => {
-//           throw new Error(errorMessage);
-//         });
-
-//         const id = '1';
-//         await expect(service.findOne(id)).rejects.toThrowError(errorMessage);
-
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledTimes(1);
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledWith({ where: { id } });
-//       });
-
-//       it('should throw an error if there is an error in updating a media object', async () => {
-//         const errorMessage = 'Error in updating media object';
-//         jest.spyOn(mediaRepository, 'findOneOrFail').mockImplementation(() => {
-//           throw new Error(errorMessage);
-//         });
-
-//         const id = '1';
-//         const updateMedia: UpdateMediaParam = {
-//           name: 'Updated Name',
-//           description: 'Updated Description',
-//         };
-//         await expect(service.update(id, updateMedia)).rejects.toThrowError(errorMessage);
-
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledTimes(1);
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledWith({ where: { id } });
-//       });
-
-//       it('should throw an error if there is an error in searching media objects', async () => {
-//         const errorMessage = 'Error in searching media objects';
-//         jest.spyOn(mediaRepository, 'find').mockImplementation(() => {
-//           throw new Error(errorMessage);
-//         });
-
-//         const search = 'search';
-//         await expect(service.search(search)).rejects.toThrowError(errorMessage);
-
-//         expect(mediaRepository.find).toHaveBeenCalledTimes(1);
-//         expect(mediaRepository.find).toHaveBeenCalledWith({
-//           where: {
-//             name: { $regex: search, $options: 'i' },
-//             description: { $regex: search, $options: 'i' },
-//           },
-//         });
-//       });
-
-//       it('should throw an error if there is an error in deleting a media object', async () => {
-//         const errorMessage = 'Error in deleting media object';
-//         jest.spyOn(mediaRepository, 'findOneOrFail').mockImplementation(() => {
-//           throw new Error(errorMessage);
-//         });
-
-//         const id = '1';
-//         await expect(service.remove(id)).rejects.toThrowError(errorMessage);
-
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledTimes(1);
-//         expect(mediaRepository.findOneOrFail).toHaveBeenCalledWith({ where: { id } });
-//       });
-//     });
-// });
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
 import { MediaService } from './media.service';
@@ -362,9 +180,15 @@ describe('MediaService', () => {
       media.id = '1';
 
       jest.spyOn(mediaRepository, 'findOneOrFail').mockResolvedValue(media);
-      jest.spyOn(mediaRepository, 'remove').mockResolvedValue(media);
+      jest.spyOn(mediaRepository, 'save').mockResolvedValue(media);
 
       expect(await mediaService.remove(media.id)).toEqual(media);
+
+      expect(mediaRepository.findOneOrFail).toHaveBeenCalledWith({
+        where: { id: media.id },
+      });
+      expect(media.deletedAt).toBeInstanceOf(Date);
+      expect(mediaRepository.save).toHaveBeenCalledWith(media);
     });
 
     it('should throw an error if remove fails', async () => {
@@ -375,6 +199,68 @@ describe('MediaService', () => {
       jest.spyOn(mediaRepository, 'remove').mockRejectedValue(new Error());
 
       await expect(mediaService.remove(media.id)).rejects.toThrow();
+    });
+  });
+
+  describe('search', () => {
+    it('should return all media objects if search is not provided', async () => {
+      const mediaList = [new Media(), new Media(), new Media()];
+
+      jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+
+      const result: Media[] = await mediaService.search();
+
+      expect(result).toEqual(mediaList);
+    });
+
+    it('should return media objects that match search query', async () => {
+        const media1 = new Media();
+        media1.name = 'Test media 1';
+        media1.description = 'This is the first test media';
+        media1.url = 'https://test-media-1.com';
+        await mediaRepository.save(media1);
+      
+        const media2 = new Media();
+        media2.name = 'Test media 2';
+        media2.description = 'This is the second test media';
+        media2.url = 'https://test-media-2.com';
+        await mediaRepository.save(media2);
+      
+        const media3 = new Media();
+        media3.name = 'Another test media';
+        media3.description = 'This is another test media';
+        media3.url = 'https://another-test-media.com';
+        await mediaRepository.save(media3);
+      
+        const searchQuery = 'test';
+        const result: Media[] = await mediaService.search(searchQuery);
+      
+        expect(result.length).toEqual(2);
+        expect(result).toContainEqual(media1);
+        expect(result).toContainEqual(media2);
+      });
+      
+    // it('should return media objects that match search query', async () => {
+    //     const mediaList = [new Media(), new Media(), new Media()];
+      
+    //     jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+      
+    //     const searchQuery = 'alien';
+      
+    //     const result: Media[] = await mediaService.search(searchQuery);
+      
+    //     expect(result.length).toEqual(2);
+    //     expect(result[0]).toEqual(mediaList[0]);
+    //     expect(result[1]).toEqual(mediaList[1]);
+    //   });
+      
+
+    it('should throw an error if find fails', async () => {
+      const searchQuery = 'test';
+
+      jest.spyOn(mediaRepository, 'find').mockRejectedValue(new Error());
+
+      await expect(mediaService.search(searchQuery)).rejects.toThrow();
     });
   });
 });
