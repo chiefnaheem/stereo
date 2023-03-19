@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MediaReturnDto, PaginationDto } from '../dto/media.dto';
 import { Media } from '../entities/media.entities';
-import { MediaType, PaginationType, UpdateMediaType } from '../types/media.types';
+import {
+  MediaType,
+  PaginationType,
+  UpdateMediaType,
+} from '../types/media.types';
 
 @Injectable()
 export class MediaService {
+  private readonly logger = new Logger(MediaService.name);
   constructor(
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
