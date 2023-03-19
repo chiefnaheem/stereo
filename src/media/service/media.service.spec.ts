@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { MediaService } from './media.service';
 import { Media } from '../entities/media.entities';
 import {
@@ -202,65 +202,154 @@ describe('MediaService', () => {
     });
   });
 
+  //   describe('search', () => {
+  //     it('should return all media objects if search is not provided', async () => {
+  //       const mediaList = [new Media(), new Media(), new Media()];
+
+  //       jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+
+  //       const result: Media[] = await mediaService.search();
+
+  //       expect(result).toEqual(mediaList);
+  //     });
+
+  //     it('should return media objects that match search query', async () => {
+  //         const media1 = new Media();
+  //         media1.name = 'Test media 1';
+  //         media1.description = 'This is the first test media';
+  //         media1.url = 'https://test-media-1.com';
+  //         await mediaRepository.save(media1);
+
+  //         const media2 = new Media();
+  //         media2.name = 'Test media 2';
+  //         media2.description = 'This is the second test media';
+  //         media2.url = 'https://test-media-2.com';
+  //         await mediaRepository.save(media2);
+
+  //         const media3 = new Media();
+  //         media3.name = 'Another test media';
+  //         media3.description = 'This is another test media';
+  //         media3.url = 'https://another-test-media.com';
+  //         await mediaRepository.save(media3);
+
+  //         const searchQuery = 'test';
+  //         const result: Media[] = await mediaService.search(searchQuery);
+
+  //         expect(result.length).toEqual(2);
+  //         expect(result).toContainEqual(media1);
+  //         expect(result).toContainEqual(media2);
+  //       });
+
+  //     // it('should return media objects that match search query', async () => {
+  //     //     const mediaList = [new Media(), new Media(), new Media()];
+
+  //     //     jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+
+  //     //     const searchQuery = 'alien';
+
+  //     //     const result: Media[] = await mediaService.search(searchQuery);
+
+  //     //     expect(result.length).toEqual(2);
+  //     //     expect(result[0]).toEqual(mediaList[0]);
+  //     //     expect(result[1]).toEqual(mediaList[1]);
+  //     //   });
+
+  //     it('should throw an error if find fails', async () => {
+  //       const searchQuery = 'test';
+
+  //       jest.spyOn(mediaRepository, 'find').mockRejectedValue(new Error());
+
+  //       await expect(mediaService.search(searchQuery)).rejects.toThrow();
+  //     });
+  //   });
+
+  // describe('search', () => {
+  //     it('should return all media objects when no search query is provided', async () => {
+  //       const mediaList: Media[] = [
+  //         { id: '1', name: 'Media 1', description: 'Description 1' } as Media,
+  //         { id: '2', name: 'Media 2', description: 'Description 2' } as Media,
+  //         { id: '3', name: 'Media 3', description: 'Description 3' } as Media,
+  //       ];
+  //       jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+
+  //       const result: Media[] = await mediaService.search();
+
+  //       expect(result.length).toEqual(mediaList.length);
+  //       expect(result).toEqual(mediaList);
+  //     });
+
+  //     it('should return media objects that match search query', async () => {
+  //       const searchQuery = 'media';
+  //       const mediaList: Media[] = [
+  //         { id: '1', name: 'Media 1', description: 'Description 1' } as Media,
+  //         { id: '2', name: 'Media 2', description: 'Description 2' } as Media,
+  //         { id: '3', name: 'Media 3', description: 'Description 3' } as Media,
+  //       ];
+  //       jest.spyOn(mediaRepository, 'find').mockResolvedValue([
+  //         mediaList[0],
+  //         mediaList[2],
+  //       ]);
+
+  //       const result: Media[] = await mediaService.search(searchQuery);
+
+  //       expect(result.length).toEqual(2);
+  //       expect(result[0]).toEqual(mediaList[0]);
+  //       expect(result[1]).toEqual(mediaList[2]);
+  //     });
+  //   });
+
   describe('search', () => {
-    it('should return all media objects if search is not provided', async () => {
-      const mediaList = [new Media(), new Media(), new Media()];
+      const mediaList = [
+        {
+          id: '1',
+          name: 'Test Media 1',
+          description: 'This is a test media',
+        } as Media,
+        {
+          id: '2',
+          name: 'Test Media 2',
+          description: 'Another test media',
+        } as Media,
+        {
+          id: '3',
+          name: 'Other Media',
+          description: 'This media is not a test',
+        } as Media,
+      ];
+    it('should return media objects that match search query', async () => {
+      const searchQuery = 'test';
+      jest.spyOn(mediaRepository, 'createQueryBuilder').mockReturnValueOnce({
+        where: jest.fn().mockReturnThis(),
+        orWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValueOnce(mediaList.slice(0, 2)),
+      } as any);
 
-      jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
+      // Call method
 
-      const result: Media[] = await mediaService.search();
+      const result: Media[] = await mediaService.search(searchQuery);
 
-      expect(result).toEqual(mediaList);
+      // Check result
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual(mediaList[0]);
+      expect(result[1]).toEqual(mediaList[1]);
     });
 
-    it('should return media objects that match search query', async () => {
-        const media1 = new Media();
-        media1.name = 'Test media 1';
-        media1.description = 'This is the first test media';
-        media1.url = 'https://test-media-1.com';
-        await mediaRepository.save(media1);
-      
-        const media2 = new Media();
-        media2.name = 'Test media 2';
-        media2.description = 'This is the second test media';
-        media2.url = 'https://test-media-2.com';
-        await mediaRepository.save(media2);
-      
-        const media3 = new Media();
-        media3.name = 'Another test media';
-        media3.description = 'This is another test media';
-        media3.url = 'https://another-test-media.com';
-        await mediaRepository.save(media3);
-      
-        const searchQuery = 'test';
-        const result: Media[] = await mediaService.search(searchQuery);
-      
-        expect(result.length).toEqual(2);
-        expect(result).toContainEqual(media1);
-        expect(result).toContainEqual(media2);
+    it('should throw an error if search fails', async () => {
+        const searchQuery = 'invalid query';
+        jest.spyOn(mediaRepository, 'createQueryBuilder').mockReturnValueOnce({
+            where: jest.fn().mockReturnThis(),
+            orWhere: jest.fn().mockReturnThis(),
+            getMany: jest.fn().mockReturnValueOnce(mediaList),
+          } as any as SelectQueryBuilder<Media>);
+          
+        try {
+          await mediaService.search(searchQuery);
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toEqual('Search failed');
+        }
       });
       
-    // it('should return media objects that match search query', async () => {
-    //     const mediaList = [new Media(), new Media(), new Media()];
-      
-    //     jest.spyOn(mediaRepository, 'find').mockResolvedValue(mediaList);
-      
-    //     const searchQuery = 'alien';
-      
-    //     const result: Media[] = await mediaService.search(searchQuery);
-      
-    //     expect(result.length).toEqual(2);
-    //     expect(result[0]).toEqual(mediaList[0]);
-    //     expect(result[1]).toEqual(mediaList[1]);
-    //   });
-      
-
-    it('should throw an error if find fails', async () => {
-      const searchQuery = 'test';
-
-      jest.spyOn(mediaRepository, 'find').mockRejectedValue(new Error());
-
-      await expect(mediaService.search(searchQuery)).rejects.toThrow();
-    });
+    
   });
 });

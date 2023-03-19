@@ -79,19 +79,30 @@ export class MediaService {
   //Search media by title and description
   async search(search?: string): Promise<Media[]> {
     try {
+      //   if (search) {
+      //     return await this.mediaRepository.createQueryBuilder('media')
+      //       .where('media.name LIKE :search', { search: `%${search}%` })
+      //       .orWhere('media.description LIKE :search', { search: `%${search}%` })
+      //       .getMany();
+      //   } else {
+      //     return await this.mediaRepository.find();
+      //   }
+      const query = this.mediaRepository.createQueryBuilder('media');
       if (search) {
-        return await this.mediaRepository.createQueryBuilder('media')
-          .where('media.name LIKE :search', { search: `%${search}%` })
-          .orWhere('media.description LIKE :search', { search: `%${search}%` })
-          .getMany();
-      } else {
-        return await this.mediaRepository.find();
+        // Search by name and description and be case insensitive
+        query
+          .where('LOWER(media.name) LIKE LOWER(:search)', {
+            search: `%${search}%`,
+          })
+          .orWhere('LOWER(media.description) LIKE LOWER(:search)', {
+            search: `%${search}%`,
+          });
       }
+      return await query.getMany();
     } catch (error) {
       throw error;
     }
   }
-  
 
   //delete a media object
   async remove(id: string): Promise<Media> {
