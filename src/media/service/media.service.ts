@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { MediaReturnDto, PaginationDto } from '../dto/media.dto';
 import { Media } from '../entities/media.entities';
 import {
-    MediaParam,
+  MediaParam,
   PaginationType,
   UpdateMediaParam,
 } from '../types/media.types';
@@ -33,12 +33,20 @@ export class MediaService {
   async findAll(body: PaginationType): Promise<MediaReturnDto> {
     try {
       const { page, limit } = body;
-      const [data, count] = await this.mediaRepository.findAndCount({
+      const skip = (page - 1) * limit;
+      const [media, count] = await this.mediaRepository.findAndCount({
+        order: { createdAt: 'DESC' },
+        skip,
         take: limit,
-        skip: (page - 1) * limit,
       });
       const totalPages = Math.ceil(count / limit);
-      return { data, count, limit, currentPage: page, totalPages };
+      return {
+        count,
+        limit,
+        currentPage: page,
+        totalPages,
+        media,
+      };
     } catch (error) {
       throw error;
     }
@@ -89,12 +97,13 @@ export class MediaService {
   //delete a media object
   async remove(id: string): Promise<Media> {
     try {
-      const mediaToUpdate = await this.mediaRepository.findOneOrFail({ where: { id } });
+      const mediaToUpdate = await this.mediaRepository.findOneOrFail({
+        where: { id },
+      });
       mediaToUpdate.deletedAt = new Date(); // set the deletedAt field to the current timestamp
       return await this.mediaRepository.save(mediaToUpdate);
     } catch (error) {
       throw error;
     }
   }
-  
 }

@@ -39,7 +39,7 @@ export class PaginationDto {
 }
 
 export class MediaReturnDto {
-    data: Media[];
+    media: Media[];
     count: number;
     limit: number;
     currentPage: number;
