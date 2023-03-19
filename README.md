@@ -26,6 +26,11 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Enviromental SetUp
+```
+check the .env.sample to see the sample of the env file. Then create an .env file in the root directory and pass the values of the database credentials into each of the keys in the .env.sample
+```
+
 ## Installation
 
 ```bash
