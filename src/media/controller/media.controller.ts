@@ -3,12 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
-import { MediaDto, PaginationDto, UpdateMediaDto } from '../dto/media.dto';
+import { MediaDto, PaginationDto, UpdateMediaDto } from 'src/media/dto/media.dto';
 import { MediaService } from '../service/media.service';
 
 @Controller('media')
@@ -16,17 +17,21 @@ export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   // Create media object
+
   @Post()
-  async create(media: MediaDto) {
+  async create(@Body() media: MediaDto) {
     try {
+        console.log(media)
       const newMedia = await this.mediaService.create(media);
       return {
+        statusCode: HttpStatus.CREATED,
         status: 'success',
         message: 'Media created successfully',
         data: newMedia,
       };
     } catch (error) {
       return {
+        statusCode: HttpStatus.BAD_REQUEST,
         status: 'error',
         message: error.message,
       };
@@ -91,7 +96,7 @@ export class MediaController {
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     try {
-      const media = await this.mediaService.delete(id);
+      const media = await this.mediaService.remove(id);
       return {
         status: 'success',
         message: 'Media deleted successfully',

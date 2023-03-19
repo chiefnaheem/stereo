@@ -1,6 +1,6 @@
 import { MediaStatusEnum, MediaTypeEnum } from '../enum/media.enum';
 
-export type MediaType = {
+export type MediaParam = {
   type: MediaTypeEnum;
   name: string;
   description?: string;
@@ -8,7 +8,7 @@ export type MediaType = {
   status?: MediaStatusEnum;
 };
 
-export type UpdateMediaType = Partial<MediaType>;
+export type UpdateMediaParam = Partial<MediaParam>;
 
 export type PaginationType = {
     page: number;

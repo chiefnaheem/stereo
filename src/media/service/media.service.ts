@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { MediaReturnDto, PaginationDto } from '../dto/media.dto';
 import { Media } from '../entities/media.entities';
 import {
-  MediaType,
+    MediaParam,
   PaginationType,
-  UpdateMediaType,
+  UpdateMediaParam,
 } from '../types/media.types';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class MediaService {
   ) {}
 
   // Create media object
-  async create(media: MediaType): Promise<Media> {
+  async create(media: MediaParam): Promise<Media> {
     try {
       this.logger.log(media);
       const newMedia = this.mediaRepository.create(media);
@@ -56,7 +56,7 @@ export class MediaService {
   }
 
   //update a media object
-  async update(id: string, media: UpdateMediaType): Promise<Media> {
+  async update(id: string, media: UpdateMediaParam): Promise<Media> {
     try {
       const mediaToUpdate = await this.mediaRepository.findOneOrFail({
         where: { id },
@@ -87,14 +87,14 @@ export class MediaService {
   }
 
   //delete a media object
-  async delete(id: string): Promise<Media> {
+  async remove(id: string): Promise<Media> {
     try {
-      const mediaToDelete = await this.mediaRepository.findOneOrFail({
-        where: { id },
-      });
-      return await this.mediaRepository.remove(mediaToDelete);
+      const mediaToUpdate = await this.mediaRepository.findOneOrFail({ where: { id } });
+      mediaToUpdate.deletedAt = new Date(); // set the deletedAt field to the current timestamp
+      return await this.mediaRepository.save(mediaToUpdate);
     } catch (error) {
       throw error;
     }
   }
+  
 }
